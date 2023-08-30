@@ -23,7 +23,7 @@ const Login: FC<LoginProps> = ({}) => {
             router.push('/test');
         } catch (error: any) {
             console.log('Login failed', error.message);
-            toast.error(error);
+            toast.error("Password or user's name is incorrect");
         } finally {
             router.refresh();
         }

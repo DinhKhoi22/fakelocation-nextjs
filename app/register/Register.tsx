@@ -21,11 +21,9 @@ const Register: FC<RegisterProps> = ({}) => {
             const response = await axios.post('/api/users/signup', user);
             console.log('Signup success', response.data);
             toast.success('Please check your email to verify your account')
-            router.push('/login');
         } catch (error: any) {
-            console.log('Signup failed', error.message);
-            
-            toast.error(error.message);
+            console.log('Signup failed', error.message);            
+            toast.error('Invalid email or already exists');
         } finally {            
             router.refresh();
         }

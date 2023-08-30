@@ -22,12 +22,13 @@ export async function POST(request: NextRequest) {
         }
 
         //hash password
+        const checkValidEmail = /^\S+@\S+\.\S+$/
         const salt = await bcryptjs.genSalt(10);
         const hashedPassword = await bcryptjs.hash(password, salt);
 
         const newUser = new User({
             username,
-            email,
+            email: checkValidEmail,
             password: hashedPassword,
         });
 
