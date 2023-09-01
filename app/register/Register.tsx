@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -17,14 +17,20 @@ const Register: FC<RegisterProps> = ({}) => {
     });
 
     const onSignup = async () => {
+        if (!user.username || !user.email || !user.password) {
+            toast.error('Please enter all required information');
+            return;
+        }
+
         try {
             const response = await axios.post('/api/users/signup', user);
             console.log('Signup success', response.data);
-            toast.success('Please check your email to verify your account')
+            toast.success('Check your email to verify');
+            router.push('/login');
         } catch (error: any) {
-            console.log('Signup failed', error.message);            
-            toast.error('Invalid email or already exists');
-        } finally {            
+            console.log('Signup failed', error.message);
+            toast.error('Something went wrong');
+        } finally {
             router.refresh();
         }
     };
@@ -64,6 +70,7 @@ const Register: FC<RegisterProps> = ({}) => {
                             value={user.username}
                             onChange={(e) => setUser({ ...user, username: e.target.value })}
                             placeholder="Username"
+                            onKeyDown={(e) => e.key === 'Enter' && onSignup()}
                             className="bg-transparent border-b border-white placeholder-white text-white focus:outline-none"
                         />
                         <input
@@ -71,6 +78,7 @@ const Register: FC<RegisterProps> = ({}) => {
                             value={user.email}
                             onChange={(e) => setUser({ ...user, email: e.target.value })}
                             placeholder="Email"
+                            onKeyDown={(e) => e.key === 'Enter' && onSignup()}
                             className="bg-transparent border-b border-white placeholder-white text-white focus:outline-none"
                         />
                         <input
@@ -78,11 +86,16 @@ const Register: FC<RegisterProps> = ({}) => {
                             value={user.password}
                             onChange={(e) => setUser({ ...user, password: e.target.value })}
                             placeholder="Password"
+                            onKeyDown={(e) => e.key === 'Enter' && onSignup()}
                             className="bg-transparent border-b border-white placeholder-white text-white focus:outline-none"
                         />
                     </form>
                     <div className="mt-8 font-semibold">
-                        Do you want to reset <Link href={'/resetPassword'}>password</Link>?
+                        Do you want to reset{' '}
+                        <Link className="hover:underline" href={'/resetPassword'}>
+                            password
+                        </Link>
+                        ?
                     </div>
                     <button
                         type="button"

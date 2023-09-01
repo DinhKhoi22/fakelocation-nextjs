@@ -21,14 +21,19 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'User already exists' }, { status: 400 });
         }
 
-        //hash password
-        const checkValidEmail = /^\S+@\S+\.\S+$/
+        // Validate the email using a regex pattern
+        const validEmailPattern = /^\S+@\S+\.\S+$/;
+        if (!validEmailPattern.test(email)) {
+            return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
+        }
+
+        //hash password        
         const salt = await bcryptjs.genSalt(10);
         const hashedPassword = await bcryptjs.hash(password, salt);
 
         const newUser = new User({
             username,
-            email: checkValidEmail,
+            email,
             password: hashedPassword,
         });
 

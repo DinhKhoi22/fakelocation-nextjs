@@ -1,10 +1,30 @@
-import Link from 'next/link';
+'use client';
+
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { FC } from 'react';
+import { FC, useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 interface ResetPasswordProps {}
 
 const ResetPassword: FC<ResetPasswordProps> = ({}) => {
+    const [email, setEmail] = useState('');
+    const router = useRouter();
+
+    const resetPassword = () => {
+        if (!email) {
+            toast.error('Please enter your email address');
+        }
+
+        axios
+            .post('/api/users/resetPassword', { email })
+            .then(() => {
+                toast.success('Reset Password successfully');
+                router.push('/login');
+            })
+            .catch(() => toast.error('Something went wrong'));
+    };
+
     return (
         <div className="flex relative h-screen w-screen overflow-hidden">
             <div className="absolute right-0">
@@ -29,7 +49,7 @@ const ResetPassword: FC<ResetPasswordProps> = ({}) => {
                             gradientUnits="userSpaceOnUse"
                         >
                             <stop stopColor="#020202" />
-                            <stop offset="1" stop-opacity="0" />
+                            <stop offset="1" stopOpacity="0" />
                         </linearGradient>
                     </defs>
                 </svg>
@@ -39,14 +59,20 @@ const ResetPassword: FC<ResetPasswordProps> = ({}) => {
                 <div className="text-center w-5/12">
                     <h1 className="text-4xl">Forgot Password</h1>
                     <p className="font-semibold mt-10">A link with code to reset your password</p>
-                    <p>has been sent to your email.  </p>
+                    <p>will be sent to your email.</p>
                     <div className="flex flex-col gap-8 font-semibold mt-20">
                         <input
+                            type="email"
+                            onChange={(e) => setEmail(e.target.value)}
                             placeholder="Email"
+                            onKeyDown={(e) => e.key === 'Enter' && resetPassword()}
                             className="bg-transparent border-b border-white placeholder-white text-white focus:outline-none"
                         />
                     </div>
-                    <button className="bg-gray-100 hover:bg-gray-200 font-medium text-black py-2 px-28 rounded-full mt-10">
+                    <button
+                        onClick={resetPassword}
+                        className="bg-gray-100 hover:bg-gray-200 font-medium text-black py-2 px-28 rounded-full mt-10"
+                    >
                         Send
                     </button>
                 </div>

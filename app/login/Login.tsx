@@ -16,6 +16,16 @@ const Login: FC<LoginProps> = ({}) => {
     });
 
     const onLogIn = async () => {
+        if(!user.username){
+            toast.error('Please enter your name');
+            return null;
+        }
+
+        if(!user.password){
+            toast.error('Please enter your password')
+            return null;
+        }
+
         try {
             const response = await axios.post('/api/users/signin', user);
             console.log('Login success', response.data);
@@ -80,14 +90,16 @@ const Login: FC<LoginProps> = ({}) => {
                     <div className="flex flex-col gap-8 font-semibold mt-20">
                         <input
                             type="text"
-                            onChange={(e) => setUser({...user, username: e.target.value})}
+                            onChange={(e) => setUser({ ...user, username: e.target.value })}
                             placeholder="Username"
+                            onKeyDown={(e) => e.key === 'Enter' && onLogIn()}
                             className="bg-transparent border-b border-white placeholder-white text-white focus:outline-none"
                         />
                         <input
                             type="password"
-                            onChange={(e) => setUser({...user, password: e.target.value})}
+                            onChange={(e) => setUser({ ...user, password: e.target.value })}
                             placeholder="Password"
+                            onKeyDown={(e) => e.key === 'Enter' && onLogIn()}
                             className="bg-transparent border-b border-white placeholder-white text-white focus:outline-none"
                         />
                     </div>

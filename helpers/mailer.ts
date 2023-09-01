@@ -5,7 +5,7 @@ import bcryptjs from 'bcryptjs';
 const myEmail = process.env.EMAIL;
 const myPassword = process.env.EMAIL_PASSWORD;
 
-export const sendEmail = async ({ email, emailType, userId }: any) => {
+export const sendEmail = async ({ email, emailType, userId, newPassword }: any) => {
     try {
         const hashedToken = await bcryptjs.hash(userId.toString(), 10);
 
@@ -16,6 +16,10 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
                 forgotPasswordToken: hashedToken,
                 forgotPasswordTokenExpiry: Date.now() + 3600000,
             });
+        }
+
+        if (!userId) {
+            console.log('User ID is undefined');
         }
 
         const transporter = nodemailer.createTransport({
@@ -30,13 +34,16 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
             from: 'dinhkhoi2110@gmail.com',
             to: email,
             subject: emailType === 'VERIFY' ? 'Verify your email' : 'Reset your password',
-            html: `<p>Click <a href="${process.env.DOMAIN}/verifyemail?token=${hashedToken}">here</a> to ${
+            html: `            
+            ${emailType === 'RESET' ? `<p>Your new Password is ${newPassword}</p>` : `
+            <p>Click <a href="${process.env.DOMAIN}/verifyemail?token=${hashedToken}">here</a> to ${
                 emailType === 'VERIFY' ? 'verify your email' : 'reset your password'
             }
             or copy and paste the link below in your browser. <br> ${
                 process.env.DOMAIN
             }/verifyemail?token=${hashedToken}
-            </p>`,
+            </p>`}
+            `,
         };
 
         const mailresponse = await transporter.sendMail(mailOptions);
